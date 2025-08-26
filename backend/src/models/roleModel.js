@@ -1,4 +1,4 @@
-import db from "../database/connectiondb.js";
+import db from "../../database/connectiondb.js";
 
 class Role {
     
