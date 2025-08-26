@@ -1,4 +1,4 @@
-import db from "../database/connectiondb.js";
+import db from "../../database/connectiondb.js";
 import bcrypt from "bcrypt";
 
 class User {
@@ -92,7 +92,7 @@ class User {
                 UPDATE usuarios SET 
                     usuario_nombre = ?, usuario_apellido = ?, usuario_edad = ?,
                     usuario_genero = ?, usuario_direccion = ?, usuario_ciudad = ?,
-                    usuario_correo = ?, usuario_telefono = ?, rol_id = ?, identificacion_id = ?
+                    usuario_correo = ?, usuario_contrasena = ?, usuario_telefono = ?, rol_id = ?, identificacion_id = ?
             `;
             let values = [
                 userData.usuario_nombre,
@@ -102,6 +102,7 @@ class User {
                 userData.usuario_direccion,
                 userData.usuario_ciudad,
                 userData.usuario_correo,
+                userData.usuario_contrasena,
                 userData.usuario_telefono,
                 userData.rol_id,
                 userData.identificacion_id
@@ -116,7 +117,7 @@ class User {
             query += ` WHERE usuario_id = ?`;
             values.push(usuario_id);
 
-            const [result] = await db.executeQuery(query, values);
+            const result = await db.executeQuery(query, values);
             return { success: result.affectedRows > 0 };
         } catch (error) {
             throw new Error(`Error al actualizar usuario: ${error.message}`);
