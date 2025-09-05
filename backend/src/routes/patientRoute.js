@@ -15,6 +15,9 @@ patientRouter.get("/:id", patientController.getById);
 // Obtener paciente por usuario ID
 patientRouter.get("/usuario/:usuario_id", patientController.getByUserId);
 
+// Obtener pacientes por médico
+patientRouter.get("/medico/:doctorId", patientController.getByDoctor);
+
 // Actualizar paciente
 patientRouter.put("/:id", patientController.update);
 
@@ -25,10 +28,16 @@ patientRouter.delete("/:id", patientController.delete);
 patientRouter.get("/:paciente_id/citas", patientController.getAppointments);
 
 // Obtener próximas citas del paciente
-patientRouter.get("/:paciente_id/citas/upcoming", patientController.getUpcomingAppointments);
+patientRouter.get(
+  "/:paciente_id/citas/upcoming",
+  patientController.getUpcomingAppointments
+);
 
 // Obtener historial médico del paciente
-patientRouter.get("/:paciente_id/historial", patientController.getMedicalHistory);
+patientRouter.get(
+  "/:paciente_id/historial",
+  patientController.getMedicalHistory
+);
 
 // Buscar pacientes por nombre o identificación
 patientRouter.get("/search", patientController.search);

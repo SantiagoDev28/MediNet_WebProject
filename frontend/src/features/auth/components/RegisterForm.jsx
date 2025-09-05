@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import authService from "../../../services/authService";
+import { useAuth } from "../../../contexts/AuthContext";
 import {
   UserIcon,
   AtSymbolIcon,
@@ -11,6 +13,8 @@ import {
 } from "@heroicons/react/24/outline";
 
 const RegisterForm = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     usuario_nombre: "",
     usuario_apellido: "",
@@ -23,7 +27,7 @@ const RegisterForm = () => {
     usuario_telefono: "",
     usuario_contrasena: "",
     usuario_confirmar_contrasena: "",
-    rol_id: "3", // Por defecto paciente
+    rol_id: "2", // Por defecto médico
     identificacion_id: "1", // Por defecto CC
   });
 
@@ -259,6 +263,22 @@ const RegisterForm = () => {
       console.log("✅ Registro exitoso:", result);
       setSuccess("Usuario registrado exitosamente");
 
+      // Hacer login automático después del registro exitoso
+      try {
+        await login(formData.usuario_correo, formData.usuario_contrasena);
+        // Redirigir según el rol
+        if (result.medico_id) {
+          navigate("/doctor/dashboard");
+        } else {
+          navigate("/patient/dashboard");
+        }
+      } catch (loginError) {
+        console.error("Error en login automático:", loginError);
+        setError(
+          "Registro exitoso, pero error en login automático. Por favor, inicia sesión manualmente."
+        );
+      }
+
       // Limpiar formulario
       setFormData({
         usuario_nombre: "",
@@ -272,18 +292,13 @@ const RegisterForm = () => {
         usuario_telefono: "",
         usuario_contrasena: "",
         usuario_confirmar_contrasena: "",
-        rol_id: "3",
+        rol_id: "2",
         identificacion_id: "1",
       });
 
       // Limpiar estados de validación
       setErrors({});
       setTouched({});
-
-      // Redirigir después de 2 segundos
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 2000);
     } catch (err) {
       setError(err.error || "Error al registrar usuario");
     } finally {
@@ -727,36 +742,6 @@ const RegisterForm = () => {
               </div>
             </div>
 
-            {/* Tipo de Usuario */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tipo de Usuario *
-              </label>
-              <div className="relative">
-                <select
-                  name="rol_id"
-                  value={formData.rol_id}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  onFocus={handleFocus}
-                  className={`w-full px-4 pr-10 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all duration-200 ${getInputBorderClass(
-                    "rol_id"
-                  )}`}
-                  required
-                >
-                  <option value="3">Paciente</option>
-                  <option value="2">Médico</option>
-                </select>
-                {getStatusIcon("rol_id")}
-
-                {errors.rol_id && touched.rol_id && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center">
-                    <ExclamationCircleIcon className="h-4 w-4 mr-1" />
-                    {errors.rol_id}
-                  </p>
-                )}
-              </div>
-            </div>
 
             {/* Mensajes de Error y Éxito */}
             {error && (
