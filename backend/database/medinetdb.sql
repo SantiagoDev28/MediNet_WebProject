@@ -35,7 +35,8 @@ CREATE TABLE `usuarios` (
   `usuario_fecha_registro` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `usuario_estado` BOOLEAN DEFAULT 1,  
   `rol_id` INT,
-  `identificacion_id` INT
+  `identificacion_id` INT,
+  `medico_id` INT
 );
 
 -- Datos usuarios
@@ -85,12 +86,13 @@ INSERT INTO especialidades (especialidad_id, especialidad_nombre) VALUES
 CREATE TABLE `pacientes` (
   `paciente_id` INT AUTO_INCREMENT PRIMARY KEY,
   `usuario_id` INT,
+  `medico_id` INT,
   `paciente_estado` BOOLEAN DEFAULT 1
 );
 
 -- Datos Pacientes
-INSERT INTO pacientes (paciente_id, usuario_id, paciente_estado) VALUES
-(1, 3, 1);
+INSERT INTO pacientes (paciente_id, usuario_id, medico_id, paciente_estado) VALUES
+(1, 3, 1, 1);
 
 -- Tabla Disponibilidad
 CREATE TABLE `disponibilidad` (
@@ -121,6 +123,8 @@ CREATE TABLE `citas` (
   `paciente_id` INT,
   `cita_fecha` DATE,
   `cita_hora` TIME,
+  `cita_tipo` VARCHAR(100),
+  `cita_observaciones` TEXT,
   `cita_estado` BOOLEAN DEFAULT 1
 );
 
@@ -178,6 +182,10 @@ ALTER TABLE `usuarios`
 ALTER TABLE `usuarios` 
   ADD FOREIGN KEY (`identificacion_id`) REFERENCES `tipos_identificaciones`(`identificacion_id`);
 
+-- Usuarios relacionados con médicos
+ALTER TABLE `usuarios` 
+  ADD FOREIGN KEY (`medico_id`) REFERENCES `medicos`(`medico_id`);
+
 -- Médicos relacionados con usuarios y especialidades
 ALTER TABLE `medicos` 
   ADD FOREIGN KEY (`usuario_id`) REFERENCES `usuarios`(`usuario_id`);
@@ -188,6 +196,10 @@ ALTER TABLE `medicos`
 -- Pacientes relacionados con usuarios
 ALTER TABLE `pacientes` 
   ADD FOREIGN KEY (`usuario_id`) REFERENCES `usuarios`(`usuario_id`);
+
+-- Pacientes relacionados con médicos
+ALTER TABLE `pacientes` 
+  ADD FOREIGN KEY (`medico_id`) REFERENCES `medicos`(`medico_id`);
 
 -- Disponibilidad relacionada con médicos
 ALTER TABLE `disponibilidad` 
